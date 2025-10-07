@@ -27,6 +27,14 @@ class ProductController {
         const { name, type, description, price, unitsAvailable, weight, image, slug,
         } = req.body;
         try {
+            const productFound = await Product.findOne({
+                where: {
+                    slug
+                }
+            });
+            if (productFound) return res.status(400).json({
+                msg: `The product with ${slug} is already in use`
+            });
             const product = await Product.create({
                 name, type, description, price, unitsAvailable, weight, image, slug,
             });
@@ -46,11 +54,11 @@ class ProductController {
         } = req.body;
         try {
             const productFound = await Product.findByPk(id);
-            if (!productFound) res.status(400).json({
+            if (!productFound) return res.status(400).json({
                 msg: `Product with id ${id} not found`
             });
             const product = await productFound.update({
-                name, type, description, price, unitsAvailable, weight, country, image, slug
+                name, type, description, price, unitsAvailable, weight, image, slug
             });
             res.status(201).json(product);
         } catch (error) {
@@ -66,7 +74,7 @@ class ProductController {
         const { id } = req.params;
         try {
             const productFound = await Product.findByPk(id);
-            if (!productFound) res.status(400).json({
+            if (!productFound) return res.status(400).json({
                 msg: `Product with id ${id} not found`
             });
             const product = await productFound.destroy();
