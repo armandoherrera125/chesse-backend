@@ -24,11 +24,11 @@ class ProductController {
         }
     }
     async createProduct(req = express.request, res = express.response) {
-        const { name, type, description, price, unitsAvailable, weight, country, image, slug,
+        const { name, type, description, price, unitsAvailable, weight, image, slug,
         } = req.body;
         try {
             const product = await Product.create({
-                name, type, description, price, unitsAvailable, weight, country, image, slug,
+                name, type, description, price, unitsAvailable, weight, image, slug,
             });
             res.status(201).json(product);
         } catch (error) {
@@ -42,7 +42,7 @@ class ProductController {
 
     async editProduct(req = express.request, res = express.response) {
         const { id } = req.params;
-        const { name, type, description, price, unitsAvailable, weight, country, image, slug,
+        const { name, type, description, price, unitsAvailable, weight, image, slug,
         } = req.body;
         try {
             const productFound = await Product.findByPk(id);
