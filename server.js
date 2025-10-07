@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-
-const productRoute = require('./routes/product-route');
 const morgan = require('morgan');
+
+const authRoute = require('./routes/auth-route');
+const productRoute = require('./routes/product-route');
 const databaseConnection = require('./db/database-connection');
 const basePath = '/api/v1/';
+const auth = 'auth';
 const products = 'products';
 class Server {
     constructor() {
@@ -24,6 +26,7 @@ class Server {
         await databaseConnection.getSequelize().sync();
     }
     routes() {
+        this.app.use(`${basePath}${auth}`, authRoute);
         this.app.use(`${basePath}${products}`, productRoute);
         this.app.use((req, res) => {
             res.status(404).json({
