@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/user-model');
 const { passwordGeneratorBcrypt, passwordCheckBcrypt } = require('../helpers/bcrypt-handler');
+const jwtGenerator = require('../helpers/jwt-handler');
 
 class AuthController {
     async login(req = express.request, res = express.response) {
@@ -17,11 +18,16 @@ class AuthController {
             if (! await passwordCheckBcrypt(password, user.password)) return res.status(400).json({
                 msg: 'User or password incorrect'
             });
+            const token = jwtGenerator({
+                email,
+                name: user.name
+            });
             res.status(201).json({
                 user: {
                     email: user.email,
                     name: user.name
-                }
+                },
+                token
             });
         } catch (error) {
             res.status(500).json({
@@ -44,6 +50,10 @@ class AuthController {
                 msg: `Email ${email} already in use`
             });
             const hashPassword = await passwordGeneratorBcrypt(password);
+            const token = jwtGenerator({
+                email,
+                name
+            });
             const user = await User.create({
                 email,
                 password: hashPassword,
@@ -52,8 +62,9 @@ class AuthController {
             res.status(201).json({
                 user: {
                     email: user.email,
-                    name: user.name
-                }
+                    name: user.name,
+                },
+                token
             });
         } catch (error) {
             res.status(500).json({
