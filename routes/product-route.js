@@ -2,6 +2,7 @@ const { Router } = require("express");
 const productController = require("../controllers/product-controller");
 const { getProductValidator, createProductValidator, editProductValidator, deleteProductValidator } = require("../middlewares/product-validator");
 const validationresult = require("../middlewares/validation-result");
+const jwtVerificator = require("../middlewares/jwt-verificator");
 
 class ProductRoute {
     constructor() {
