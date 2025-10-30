@@ -25,7 +25,8 @@ class AuthController {
             res.status(201).json({
                 user: {
                     email: user.email,
-                    name: user.name
+                    displayName: user.name,
+                    uid: user.id
                 },
                 token
             });
@@ -62,7 +63,8 @@ class AuthController {
             res.status(201).json({
                 user: {
                     email: user.email,
-                    name: user.name,
+                    displayName: user.name,
+                    uid: user.id
                 },
                 token
             });

@@ -13,13 +13,15 @@ class DatabaseConnection {
                 logging: false,
             }
         );
+
+        require('../models')(this.sequelize);
     }
 
     async connect() {
-        console.log(process.env.DB_NAME)
+        console.log(`Connecting to database: ${process.env.DB_NAME}`);
         try {
             await this.sequelize.authenticate();
-            console.log(' Connection established successfully.');
+            console.log('Connection established successfully.');
         } catch (error) {
             console.error('Unable to connect to the database:', error);
         }
