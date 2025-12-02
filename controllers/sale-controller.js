@@ -8,12 +8,13 @@ class SaleController {
 
     async getSales(req = express.request, res = express.response) {
         try {
-            const salesWithoutFormat = await Sale.findAll({
+            const { count: transactions, rows: salesWithoutFormat } = await Sale.findAndCountAll({
                 include: [
                     { model: User, as: 'user' },
                     { model: Product, as: 'product' },
                 ]
             });
+            console.log(salesWithoutFormat)
             const sales = salesWithoutFormat.map((item) => ({
                 id: item.id,
                 quantity: item.quantity,
@@ -21,7 +22,24 @@ class SaleController {
                 product: item.product.name,
                 date: new Date(item.createdAt).toISOString().split('T')[0]
             }));
-            res.status(200).json(sales);
+
+
+            let revenue = 0;
+
+            if (salesWithoutFormat) {
+                salesWithoutFormat.forEach(item => {
+                    revenue += item.total;
+                });
+            }
+            revenue = Number(revenue.toFixed(2))
+            const avg = Number((revenue / transactions).toFixed(2))
+            const result = {
+                revenue,
+                transactions,
+                avg,
+                sales
+            };
+            res.status(200).json(result);
         } catch (error) {
             res.status(500).json({
                 msg: 'Internal server error',
@@ -32,6 +50,7 @@ class SaleController {
 
     async createSale(req = express.request, res = express.response) {
         const { sales } = req.body;
+        console.log(sales)
         if (!sales) return res.status(400).json({
             msg: 'The sales are required'
         });
@@ -40,7 +59,7 @@ class SaleController {
             if (sales.length === 1) {
                 sale = await Sale.create({
                     quantity: sales[0].quantity,
-                    total: sales[0].quantity,
+                    total: sales[0].total,
                     userId: sales[0].userId,
                     productId: sales[0].productId
                 });
